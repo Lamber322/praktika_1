@@ -24,21 +24,24 @@ class ImageApp:
         webcam_btn = tk.Button(btn_frame, text="Использовать веб-камеру", command=self.use_webcam)
         webcam_btn.grid(row=0, column=1, padx=5, pady=5)
 
+        channel_label = tk.Label(btn_frame, text="Список каналов")
+        channel_label.grid(row=1, column=0, padx=5, pady=5)
+        
         self.channel_var = tk.StringVar(value="Красный")
         channel_menu = tk.OptionMenu(btn_frame, self.channel_var, "Красный", "Зеленый", "Синий", command=self.show_channel)
-        channel_menu.grid(row=1, column=0, padx=5, pady=5)
+        channel_menu.grid(row=2, column=0, padx=5, pady=5)
 
         crop_btn = tk.Button(btn_frame, text="Обрезать изображение", command=self.crop_image)
-        crop_btn.grid(row=1, column=1, padx=5, pady=5)
+        crop_btn.grid(row=2, column=1, padx=5, pady=5)
 
         avg_btn = tk.Button(btn_frame, text="Применить фильтр усреднения", command=self.apply_average_filter)
-        avg_btn.grid(row=2, column=0, padx=5, pady=5)
+        avg_btn.grid(row=3, column=0, padx=5, pady=5)
 
         draw_circle_btn = tk.Button(btn_frame, text="Нарисовать круг", command=self.draw_circle)
-        draw_circle_btn.grid(row=2, column=1, padx=5, pady=5)
+        draw_circle_btn.grid(row=3, column=1, padx=5, pady=5)
 
         reset_btn = tk.Button(btn_frame, text="Сбросить изменения", command=self.reset_image)
-        reset_btn.grid(row=3, column=0, padx=5, pady=5)
+        reset_btn.grid(row=4, column=0, padx=5, pady=5)
 
     def upload_image(self):
         file_path = filedialog.askopenfilename(filetypes=[("Изображения", "*.png;*.jpg")])
