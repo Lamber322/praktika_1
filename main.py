@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog
 from PIL import Image, ImageTk, ImageFilter, ImageDraw
 import cv2
+import threading
 
 class ImageApp:
     def __init__(self, root):
@@ -21,7 +22,7 @@ class ImageApp:
         upload_btn = tk.Button(btn_frame, text="Загрузить изображение", command=self.upload_image)
         upload_btn.grid(row=0, column=0, padx=5, pady=5)
 
-        webcam_btn = tk.Button(btn_frame, text="Использовать веб-камеру", command=self.use_webcam)
+        webcam_btn = tk.Button(btn_frame, text="Использовать веб-камеру", command=self.start_webcam_thread)
         webcam_btn.grid(row=0, column=1, padx=5, pady=5)
 
         channel_label = tk.Label(btn_frame, text="Список каналов")
@@ -53,25 +54,40 @@ class ImageApp:
             except Exception as e:
                 messagebox.showerror("Ошибка", f"Не удалось открыть изображение: {e}")
 
+    def start_webcam_thread(self):
+        webcam_thread = threading.Thread(target=self.use_webcam)
+        webcam_thread.daemon = True
+        webcam_thread.start()
+        
     def use_webcam(self):
         try:
             cap = cv2.VideoCapture(0)
             if not cap.isOpened():
                 messagebox.showerror("Ошибка", "Не удалось открыть веб-камеру")
                 return
-            ret, frame = cap.read()
-            if ret:
-                cv2.imshow('Press 1 for save image', frame)
-                key = cv2.waitKey(0) & 0xFF
-                if key == ord('1'):
+
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                cv2.imshow('Press 2 to exit, 1 to save image', frame)
+                key = cv2.waitKey(1) & 0xFF
+                if key == ord('2'):
+                    break
+                elif key == ord('1'):
                     image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     self.image = Image.fromarray(image_rgb)
                     self.original_image = self.image.copy()  
                     self.display_image(self.image)
+
             cap.release()
             cv2.destroyAllWindows()
         except Exception as e:
             messagebox.showerror("Ошибка", f"Произошла ошибка: {e}")
+        finally:
+            if cap.isOpened():
+                cap.release()
+            cv2.destroyAllWindows()
 
     def display_image(self, image):
         self.tk_image = ImageTk.PhotoImage(image)
